@@ -71,7 +71,7 @@ def changeTileInTILES(oldtile_str, newtile_str, file_lines):
         edited_lines = changeTileInMAP("gg",newtile_hex,edited_lines)
 
     elif oldtile_oldline:
-        print("newtile is an empty tile! insert oldtile in lastNewIndex = {} and emove it from its original location".format(lastNewIndex))
+        print("newtile is an empty tile! insert oldtile after index {} and remove it from its original location".format(lastNewIndex))
         file_lines.insert(lastNewIndex, oldtile_newline)
         file_lines.pop(file_lines.index(oldtile_oldline))
 
@@ -79,7 +79,7 @@ def changeTileInTILES(oldtile_str, newtile_str, file_lines):
         edited_lines = changeTileInMAP(oldtile_hex,newtile_hex,edited_lines)
 
     elif newtile_oldline:
-        print("oldtile is an empty tile! insert newtile in lastOldIndex = {} and remove it from its original location".format(lastOldIndex))
+        print("oldtile is an empty tile! insert newtile after index {} and remove it from its original location".format(lastOldIndex))
         file_lines.insert(lastOldIndex, newtile_newline)
         file_lines.pop(file_lines.index(newtile_oldline))
 
