@@ -1,6 +1,6 @@
 # tic80tileswap
 
-Swap around tiles in a TIC-80 .lua file (requires TIC-80 pro)
+Tools for modifying sprite sheet and tile map in a TIC-80 .lua file (requires TIC-80 pro)
 
 ## replaceTile.py
 
