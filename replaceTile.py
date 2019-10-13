@@ -1,31 +1,33 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import argparse
 
 if len(sys.argv) == 1:
-    print("usage: python replaceTile.py infile outfile oldtile newtile")
-    print("the program replaces instances of [oldtile] with [newtile] in MAP and TILES.")
+    print("usage: python replaceTile.py [file] [oldtile] [newtile], example: python replaceTile.py game.lua 14 185")
+    print("the program replaces instances of [oldtile] with [newtile] in MAP and swaps them around in TILES.")
     exit()
 
 filename = sys.argv[1]
-outfilename = sys.argv[2]
-oldtile_str = sys.argv[3]
-newtile_str = sys.argv[4]
+oldtile_str = sys.argv[2]
+newtile_str = sys.argv[3]
 
-def changeTileInTILES(oldtile_str, newtile_str, file_lines):
+def intToHex(n):
+    hexa = str(hex(n))[2:]   # [2:] gets rid of "0x"
+    hexa = hexa[1:]+hexa[:1] #damn you nesbox with your endianness shenanigans
+    hexa = hexa.ljust(2, '0')  #"7" --> "70"
+    return hexa
+
+def swapTiles(oldtile_str, newtile_str, file_lines):
 
     oldtile = int(oldtile_str)
     newtile = int(newtile_str)
 
-    oldtile_str = oldtile_str.zfill(3)               #"5" --> "005"
+    oldtile_str = oldtile_str.zfill(3) #"5" --> "005"
     newtile_str = newtile_str.zfill(3)
 
-    oldtile_hex = str(hex(oldtile))[2:]
-    newtile_hex = str(hex(newtile))[2:]
-    oldtile_hex = oldtile_hex[1:]+oldtile_hex[:1]    #damn you nesbox with your endianness shenanigans
-    newtile_hex = newtile_hex[1:]+newtile_hex[:1]
-    oldtile_hex = oldtile_hex.ljust(2, '0')          #"7" --> "70"
-    newtile_hex = newtile_hex.ljust(2, '0')
+    oldtile_hex = intToHex(oldtile)
+    newtile_hex = intToHex(newtile)
 
     print("(tiles as reversed hex, as they appear in .lua):")
     print(oldtile_hex + " -> " + newtile_hex)
@@ -89,38 +91,33 @@ def changeTileInTILES(oldtile_str, newtile_str, file_lines):
     return edited_lines
 
 def changeTileInMAP(oldtile,newtile,file_lines):
-    newfile = []
     readmap = False
     for line in file_lines:
         if line.startswith("-- <MAP>"):
             print("map starts!")
             readmap = True
-            newfile.append(line)
             continue
         elif line.startswith("-- </MAP>"):
             print("map ends!")
             readmap = False
-            newfile.append(line)
             continue
         if readmap:
             newline = ""
             mapline = line[7:]
             for i in range(0, len(mapline), 2):
                 if mapline[i:i+2] == oldtile:
-                    newline+=newtile
-                    print(oldtile+" replaced with "+newtile)
+                    newline += newtile
+                    print(oldtile + " replaced with " + newtile)
                 else:
-                    newline+=mapline[i:i+2]
-            newfile.append(line[:7]+newline)
+                    newline += mapline[i:i+2]
+            file_lines[file_lines.index(line)] = line[:7] + newline
             continue
-        newfile.append(line)
-    return newfile
+    return file_lines
 
 with open(filename) as file:
     lines = file.readlines()
-    #edited_lines = changeTileInMAP(oldtile_hex,newtile_hex,lines)
-    edited_lines = changeTileInTILES(oldtile_str,newtile_str,lines)
+    edited_lines = swapTiles(oldtile_str,newtile_str,lines)
 
-with open(outfilename,"w") as file:
+with open(filename,"w") as file:
     for line in edited_lines:
         file.write(line)
