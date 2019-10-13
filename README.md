@@ -2,6 +2,8 @@
 
 Tools for modifying sprite sheet and tile map in a TIC-80 .lua file (requires TIC-80 pro)
 
+The tools modify the file in-place, so take a backup before trying them out.
+
 ## replaceTile.py
 
 usage: `python replaceTile.py [file] [oldtile] [newtile]`
