@@ -3,22 +3,16 @@
 import sys
 import argparse
 
-if len(sys.argv) == 1:
-    print("usage: python replaceTile.py [file] [oldtile] [newtile], example: python replaceTile.py game.lua 14 185")
-    print("the program replaces instances of [oldtile] with [newtile] in MAP and swaps them around in TILES.")
-    exit()
-
-filename = sys.argv[1]
-oldtile_str = sys.argv[2]
-newtile_str = sys.argv[3]
-
 def intToHex(n):
     hexa = str(hex(n))[2:]   # [2:] gets rid of "0x"
     hexa = hexa[1:]+hexa[:1] #damn you nesbox with your endianness shenanigans
     hexa = hexa.ljust(2, '0')  #"7" --> "70"
     return hexa
 
-def swapTiles(oldtile_str, newtile_str, file_lines):
+def swapTiles(oldtile, newtile, file_lines):
+    
+    oldtile_str=str(oldtile)
+    newtile_str=str(newtile)
 
     oldtile = int(oldtile_str)
     newtile = int(newtile_str)
@@ -114,9 +108,28 @@ def changeTileInMAP(oldtile,newtile,file_lines):
             continue
     return file_lines
 
+if len(sys.argv) == 1:
+    print("usage: python replaceTile.py [file] [oldtile] [newtile] ([tile_length = 1]), example: python replaceTile.py game.lua 14 185 3")
+    print("the program replaces instances of [oldtile] with [newtile] in MAP and swaps them around in TILES.")
+    print("if tile_length is given, swaps a range {oldtile, oldtile + tile_length} with {newtile, newtile + tile_length}") 
+    exit()
+
+filename = sys.argv[1]
+oldtile_str = sys.argv[2]
+newtile_str = sys.argv[3]
+oldtile = int(oldtile_str)
+newtile = int(newtile_str)
+
+try:
+    tile_length = int(sys.argv[4])
+except:
+    tile_length = 1
+
 with open(filename) as file:
-    lines = file.readlines()
-    edited_lines = swapTiles(oldtile_str,newtile_str,lines)
+    edited_lines = file.readlines()
+
+    for i in xrange(tile_length):
+        edited_lines = swapTiles(oldtile+i,newtile+i,edited_lines)
 
 with open(filename,"w") as file:
     for line in edited_lines:
