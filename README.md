@@ -6,11 +6,13 @@ The tools modify the file in-place, so take a backup before trying them out.
 
 ## replaceTile.py
 
-usage: `python replaceTile.py [file] [oldtile] [newtile]`
+usage: `python replaceTile.py [file] [oldtile] [newtile] ([tile_length = 1])`
 
-example: `python replaceTile.py game.lua 14 185`
+example: `python replaceTile.py game.lua 14 185 3`
 
 replaces instances of `[oldtile]` with `[newtile]` in MAP and swaps them around in TILES.
+
+if tile_length is given, swaps a range {oldtile, oldtile + tile_length} with {newtile, newtile + tile_length}
 
 ## swapCols.py
 
